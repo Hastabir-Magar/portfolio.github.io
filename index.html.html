@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hastabir Budha Magar | Software & Managed IT Solutions</title>
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+/* ============================================================
+   BOOTSTRAP OVERRIDES & DESIGN TOKENS
+   ============================================================ */
+:root{
+  --navy:#0f2740; --navy-soft:#1a3a5c;
+  --crimson:#e63946; --crimson-dark:#c1121f;
+  --steel:#6c8a9e; --steel-light:#94a3b8;
+  --ink:#1e293b; --muted:#64748b;
+  --line:#e2e8f0; --paper:#ffffff;
+  --wash:#f4f6f8; --wash-deep:#eef2f6;
+  --font:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  --header:76px;
+  --radius:8px; --radius-lg:12px;
+  --shadow-sm:0 1px 3px rgba(15,39,64,.08);
+  --shadow-md:0 6px 18px rgba(15,39,64,.10);
+  --shadow-lg:0 18px 42px rgba(15,39,64,.14);
+  --ease:.35s cubic-bezier(.16,1,.3,1);
+  
+  --bs-body-font-family: var(--font);
+  --bs-body-color: var(--ink);
+  --bs-primary: var(--crimson);
+  --bs-primary-rgb: 230, 57, 70;
+}
+
+body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+img{max-width:100%;display:block}
+
+/* Typography */
+h1,h2,h3,h4,h5{color:var(--navy);font-weight:700;line-height:1.2;letter-spacing:-.02em}
+h1{font-size:clamp(2.4rem,5vw,3.6rem)}
+h2{font-size:clamp(1.9rem,3.4vw,2.7rem)}
+h3{font-size:1.45rem}
+h4{font-size:1.15rem}
+p{color:var(--muted);font-size:1.05rem;margin-bottom:1.4rem}
+.eyebrow{display:block;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--crimson);margin-bottom:12px}
+
+/* Custom Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;font-size:.94rem;font-weight:600;border-radius:6px;transition:all .2s ease;white-space:nowrap}
+.btn-primary{background:var(--crimson);color:#fff;border:none}
+.btn-primary:hover{background:var(--crimson-dark);color:#fff;transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn-dark{background:var(--navy);color:#fff;border:none}
+.btn-dark:hover{background:var(--navy-soft);color:#fff;transform:translateY(-2px)}
+.btn-outline-secondary{border:1px solid var(--line);color:var(--navy);background:#fff}
+.btn-outline-secondary:hover{border-color:var(--navy);background:var(--wash);color:var(--navy)}
+.btn-light{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn-light:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* Scroll Reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ============================================================
+   GLOBAL HEADER
+   ============================================================ */
+.global-header{position:fixed;inset:0 0 auto 0;height:var(--header);background:#fff;z-index:1050;border-bottom:1px solid var(--line);transition:box-shadow .2s}
+.global-header.scrolled{box-shadow:var(--shadow-sm)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:100%}
+.logo-link{display:flex;align-items:center;flex-shrink:0;z-index:1052}
+.logo-link img{height:44px;width:auto}
+
+/* Desktop Nav */
+.desktop-nav{display:flex;align-items:center;height:100%}
+.nav-item-custom{position:static;height:100%;display:flex;align-items:center}
+.nav-link-custom{display:flex;align-items:center;gap:6px;padding:10px 18px;font-size:.94rem;font-weight:600;color:var(--navy);border-radius:4px;transition:color .2s;cursor:pointer;position:relative;background:none;border:none}
+.nav-link-custom:hover{color:var(--crimson)}
+.nav-link-custom svg{width:10px;height:10px;transition:transform .2s;pointer-events:none}
+.nav-link-custom[aria-expanded="true"] svg{transform:rotate(180deg)}
+.nav-link-custom[aria-expanded="true"]{color:var(--crimson)}
+
+/* ============================================================
+   PREMIUM ANIMATED MEGA MENU
+   ============================================================ */
+.mega-menu{
+  position:fixed; top:var(--header); left:0; width:100%;
+  background:#fff; box-shadow:var(--shadow-lg); border-top:1px solid var(--line);
+  padding:48px 0 56px; 
+  opacity:0; visibility:hidden; transform:translateY(12px);
+  /* Fix: Delayed visibility transition for smooth fade-out */
+  transition:opacity .25s ease, transform .25s ease, visibility 0s linear .25s;
+  z-index:1051; pointer-events:none;
+  overflow: hidden;
+}
+.nav-item-custom.mega-open .mega-menu{
+  opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
+  /* Fix: Instant visibility on open */
+  transition:opacity .25s ease, transform .25s ease, visibility 0s linear 0s;
+}
+
+/* --- Animated Background Elements --- */
+.mega-bg-anim {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+.mega-bg-grid {
+  position: absolute; inset: 0; background-size: 30px 30px;
+  background-image:
+    linear-gradient(to right, rgba(15, 39, 64, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 39, 64, 0.02) 1px, transparent 1px);
+  animation: panGrid 30s linear infinite;
+  animation-play-state: paused;
+}
+.nav-item-custom.mega-open .mega-bg-grid { animation-play-state: running; }
+
+@keyframes panGrid {
+  0% { background-position: 0 0; }
+  100% { background-position: 30px 30px; }
+}
+
+.mega-orb {
+  position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.08;
+  animation: floatOrb 20s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+.nav-item-custom.mega-open .mega-orb { animation-play-state: running; }
+
+.mega-orb-1 { width: 500px; height: 500px; background: var(--crimson); top: -200px; left: 10%; }
+.mega-orb-2 { width: 600px; height: 600px; background: var(--navy-soft); bottom: -300px; right: 5%; animation-delay: -5s; }
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 20px) scale(1.05); }
+}
+
+.mega-menu .container { position: relative; z-index: 1; }
+
+/* --- Mega Menu Typography & Links --- */
+.mega-menu .mega-col h4 {
+  font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px; font-weight: 700;
+  border-bottom: 1px solid var(--line); padding-bottom: 12px;
+}
+
+.mega-menu .mega-link {
+  display: flex; align-items: center; gap: 12px; font-size: .95rem;
+  padding: 10px 12px; color: var(--ink); border-radius: 6px;
+  transition: all .2s ease; font-weight: 500;
+}
+.mega-menu .mega-link:hover {
+  background-color: var(--wash); color: var(--crimson); transform: translateX(4px);
+}
+.mega-menu .mega-link svg {
+  width: 18px; height: 18px; color: var(--steel); transition: color .2s;
+}
+.mega-menu .mega-link:hover svg { color: var(--crimson); }
+
+/* --- Premium Feature Card --- */
+.mega-feature-card {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+  padding: 32px; border-radius: var(--radius-lg); color: #fff; height: 100%;
+  display: flex; flex-direction: column; position: relative; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15,39,64,.15); transition: transform .3s ease;
+}
+.mega-feature-card:hover { transform: translateY(-4px); }
+.mega-feature-card::before {
+  content: ''; position: absolute; top: 0; right: 0; width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(230,57,70,.4) 0%, transparent 70%); opacity: 0.8;
+}
+.mega-feature-card h5 {
+  color: #fff; font-size: 1.25rem; margin-bottom: 12px; position: relative; z-index: 1;
+}
+.mega-feature-card p {
+  color: #cbd5e1; font-size: .9rem; line-height: 1.6;
+  margin-bottom: 24px; position: relative; z-index: 1; flex-grow: 1;
+}
+.mega-feature-card .btn-feature {
+  background: var(--crimson); color: #fff; border: none; padding: 10px 20px;
+  font-size: .9rem; font-weight: 600; border-radius: 4px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .2s; position: relative; z-index: 1; align-self: flex-start;
+}
+.mega-feature-card .btn-feature:hover { background: var(--crimson-dark); }
+
+/* Backdrop */
+.mega-backdrop{position:fixed;inset:var(--header) 0 0 0;background:rgba(15,39,64,.6);backdrop-filter:blur(3px);z-index:1049;opacity:0;visibility:hidden;transition:opacity .3s ease, visibility .3s;}
+.mega-backdrop.active{opacity:1;visibility:visible;pointer-events:auto}
+
+/* Header Actions */
+.header-actions{display:flex;align-items:center;gap:8px;z-index:1052}
+.icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--navy);transition:background .2s;border:none;background:transparent}
+.icon-btn:hover{background:var(--wash)}
+.icon-btn svg{width:20px;height:20px}
+.mobile-toggle{display:none;flex-direction:column;gap:5px;width:44px;height:44px;align-items:center;justify-content:center;background:none;border:none}
+.mobile-toggle span{display:block;width:22px;height:2px;background:var(--navy);transition:all .3s}
+
+/* ============================================================
+   MOBILE DRAWER & ACCORDION (Sleek Chevron Design)
+   ============================================================ */
+.mobile-drawer{position:fixed;top:var(--header);left:-100%;width:100%;height:calc(100vh - var(--header));background:#fff;z-index:1040;overflow-y:auto;transition:left var(--ease)}
+.mobile-drawer.active{left:0}
+
+.mobile-drawer .accordion-button {
+  background-color: #fff; color: var(--navy); font-weight: 600;
+  font-size: 1.05rem; padding: 18px 24px; box-shadow: none; border-radius: 0;
+  border-bottom: 1px solid var(--line);
+}
+.mobile-drawer .accordion-button:not(.collapsed) {
+  color: var(--crimson); background-color: var(--wash); border-bottom-color: transparent;
+}
+/* Professional chevron arrow */
+.mobile-drawer .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-size: 1.2rem; width: 1.2rem; height: 1.2rem;
+  transition: transform 0.3s ease; margin-right: 4px;
+}
+.mobile-drawer .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transform: rotate(180deg);
+}
+.mobile-drawer .accordion-body { padding: 8px 24px 20px; background-color: #fff; }
+.mobile-drawer .mobile-link { display: block; padding: 10px 0; font-size: .98rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+.mobile-drawer .mobile-link:last-child { border-bottom: none; }
+.mobile-drawer .mobile-link:hover { color: var(--crimson); padding-left: 4px; transition: all 0.2s; }
+
+/* ============================================================
+   SEARCH MODAL
+   ============================================================ */
+.modal-backdrop.show { opacity: 0.85; background-color: var(--navy); backdrop-filter: blur(4px); }
+.search-modal .modal-content { background: transparent; border: none; box-shadow: none; }
+.search-box{position:relative;display:flex;align-items:center;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lg)}
+.search-box svg{position:absolute;left:22px;width:22px;height:22px;color:var(--muted)}
+.search-input{width:100%;padding:22px 22px 22px 64px;font-size:1.08rem;border:none;outline:none}
+.search-close{position:absolute;right:20px;font-size:1.6rem;color:var(--muted);padding:6px;background:none;border:none}
+.search-suggestions{margin-top:24px;background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-lg);display:none}
+.search-suggestions.active{display:block}
+.suggestion-group{margin-bottom:22px}
+.suggestion-group h5{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.suggestion-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:4px;cursor:pointer}
+.suggestion-item:hover{background:var(--wash)}
+.suggestion-tag{margin-left:auto;font-size:.7rem;background:var(--wash-deep);color:var(--muted);padding:2px 8px;border-radius:99px}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;margin-top:var(--header);min-height:620px;display:flex;align-items:center;background:var(--navy);overflow:hidden}
+.hero-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(15,39,64,.88),rgba(15,39,64,.96)),url('data:image/svg+xml;utf8,<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg"><path d="M80 0L0 0 0 80" fill="none" stroke="%23ffffff" stroke-width="1" stroke-opacity=".04"/></svg>')}
+.hero-content{position:relative;z-index:2;max-width:820px}
+.hero h1{color:#fff;margin-bottom:24px}
+.hero p{color:#cbd5e1;font-size:1.22rem;margin-bottom:38px;max-width:600px}
+.hero-controls{position:absolute;bottom:44px;left:0;display:flex;gap:8px;z-index:2;padding-left:24px}
+.hero-dot{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);cursor:pointer}
+.hero-dot.active{background:var(--crimson)}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.nav-tabs-custom { border-bottom: 2px solid var(--line); margin-bottom: 44px; gap: 6px; }
+.nav-tabs-custom .nav-link { border: none; border-bottom: 3px solid transparent; color: var(--muted); font-weight: 600; font-size: .98rem; padding: 18px 26px; margin-bottom: -2px; border-radius: 0; }
+.nav-tabs-custom .nav-link:hover { color: var(--navy); border-color: transparent; }
+.nav-tabs-custom .nav-link.active { color: var(--crimson); background: transparent; border-bottom-color: var(--crimson); }
+
+.highlight-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;background:var(--wash);border-radius:var(--radius-lg);overflow:hidden}
+.highlight-text{padding:52px}
+.highlight-text h3{margin-bottom:14px}
+.highlight-visual{background:var(--navy);min-height:320px;display:flex;align-items:center;justify-content:center;padding:40px;position:relative}
+.highlight-visual::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(230,57,70,.14),transparent 60%)}
+.highlight-visual h4{color:#fff;font-size:1.5rem;text-align:center;position:relative;z-index:1}
+
+/* ============================================================
+   CARDS & GRIDS
+   ============================================================ */
+.stories-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:44px}
+.stories-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:20px;scrollbar-width:none}
+.stories-track::-webkit-scrollbar{display:none}
+.story-card{flex:0 0 calc(33.333% - 15px);scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.story-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:transparent}
+.story-media{height:170px;background:linear-gradient(135deg,var(--navy),#1a3a5c);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-weight:600}
+.story-body{padding:24px;display:flex;flex-direction:column;flex-grow:1}
+.story-tag{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--crimson);margin-bottom:8px}
+.story-body h4{margin-bottom:10px}
+.story-body p{font-size:.9rem;flex-grow:1}
+.story-link{margin-top:auto;font-size:.9rem;font-weight:600;color:var(--navy);background:none;border:none;padding:0;text-align:left}
+.story-link:hover{color:var(--crimson)}
+
+.carousel-controls{display:flex;justify-content:center;gap:10px;margin-top:24px}
+.carousel-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy);transition:all .2s}
+.carousel-btn:hover{background:var(--crimson);border-color:var(--crimson);color:#fff}
+
+.product-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;overflow:hidden;transition:box-shadow .2s,transform .2s;height:100%}
+.product-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px;background:var(--crimson);transform:scaleX(0);transform-origin:left;transition:transform var(--ease)}
+.product-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.product-card:hover::before{transform:scaleX(1)}
+.product-icon{width:50px;height:50px;border-radius:var(--radius);background:var(--wash);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--crimson);margin-bottom:22px}
+.product-card p{flex-grow:1;font-size:.95rem}
+.product-link{font-size:.9rem;font-weight:600;color:var(--crimson);display:inline-flex;align-items:center;gap:6px;margin-top:auto}
+.product-link:hover{gap:10px}
+
+/* ============================================================
+   ACCORDION (Page Content)
+   ============================================================ */
+.accordion-custom .accordion-item{border:1px solid var(--line);border-radius:6px;background:#fff;margin-bottom:10px;overflow:hidden}
+.accordion-custom .accordion-button{padding:18px 22px;font-size:.98rem;font-weight:600;color:var(--navy);background:#fff;box-shadow:none}
+.accordion-custom .accordion-button:not(.collapsed){color:var(--crimson);background:#fafafa;box-shadow:none}
+.accordion-custom .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-size: 1.2rem; width: 1.2rem; height: 1.2rem; transition: transform 0.3s ease;
+}
+.accordion-custom .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transform: rotate(180deg);
+}
+.accordion-custom .accordion-body{padding:0 22px 18px;font-size:.94rem;color:var(--muted)}
+
+.path-card{display:flex;align-items:center;gap:14px;padding:16px;background:var(--wash);border-radius:6px;margin-bottom:14px}
+.path-num{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.path-num.alt{background:var(--crimson)}
+.path-card h4{font-size:.98rem;margin-bottom:2px}
+.path-card p{font-size:.82rem;margin:0}
+
+/* ============================================================
+   FOOTER & MOBILE FOOTER ACCORDION
+   ============================================================ */
+.global-footer{background:var(--navy);color:#94a3b8;padding:76px 0 30px;font-size:.9rem}
+.footer-brand img{height:50px;background:#fff;padding:5px;border-radius:50%;margin-bottom:18px}
+.footer-brand p{color:#94a3b8;font-size:.9rem}
+.footer-col h4{color:#fff;font-size:.94rem;margin-bottom:20px}
+.footer-col ul{display:flex;flex-direction:column;gap:12px;padding-left:0}
+.footer-col a{color:#94a3b8;transition:color .2s}
+.footer-col a:hover{color:var(--crimson)}
+
+.footer-accordion .accordion-item { background-color: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.footer-accordion .accordion-button { background-color: transparent; color: #fff; font-size: 0.95rem; font-weight: 600; padding: 16px 0; box-shadow: none; }
+.footer-accordion .accordion-button:not(.collapsed) { color: var(--crimson); }
+.footer-accordion .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-size: 1rem; width: 1rem; height: 1rem; transition: transform 0.3s ease;
+}
+.footer-accordion .accordion-button:not(.collapsed)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e63946' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transform: rotate(180deg);
+}
+.footer-accordion .accordion-body { padding: 0 0 16px 0; }
+.footer-accordion .accordion-body a { display: block; padding: 8px 0; color: #94a3b8; font-size: 0.9rem; }
+.footer-accordion .accordion-body a:hover { color: #fff; padding-left: 4px; transition: all 0.2s; }
+
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;color:#64748b;font-size:.84rem}
+.footer-links{display:flex;gap:22px}
+.footer-links a:hover{color:#fff}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:1024px){
+  .highlight-grid{grid-template-columns:1fr}
+  .story-card{flex:0 0 calc(50% - 11px)}
+}
+@media(max-width:768px){
+  .desktop-nav,.header-actions .btn{display:none !important}
+  .mobile-toggle{display:flex}
+  .hero{min-height:500px}
+  .highlight-text{padding:28px}
+  .story-card{flex:0 0 86%}
+  .footer-bottom{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     GLOBAL HEADER
+     ============================================================ -->
+<header class="global-header" id="header">
+  <div class="container header-inner">
+    <a href="#" class="logo-link" data-nav="home">
+      <img src="/static/images/dark-logo.png" alt="Hastabir Budha Magar">
+    </a>
+
+    <!-- Desktop Mega Menu Navigation -->
+    <nav class="desktop-nav" aria-label="Main Navigation">
+      <!-- Products -->
+      <div class="nav-item-custom" data-menu="products">
+        <button class="nav-link-custom" aria-haspopup="true" aria-expanded="false" aria-controls="mega-products">
+          Products
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega-menu" id="mega-products">
+          <div class="mega-bg-anim">
+            <div class="mega-bg-grid"></div>
+            <div class="mega-orb mega-orb-1"></div>
+            <div class="mega-orb mega-orb-2"></div>
+          </div>
+          
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-3 mega-col">
+                <h4>Software Products</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg> Enterprise Web Apps</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg> Mobile App Development</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg> Cloud Infrastructure</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> API & Integration</a></li>
+                </ul>
+              </div>
+              
+              <div class="col-lg-3 mega-col">
+                <h4>Managed IT</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 24/7 Helpdesk Support</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Cybersecurity & Compliance</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg> Network Management</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Data Backup & Recovery</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <h4>DevOps & Tooling</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> CI/CD Pipelines</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Containerization</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Infrastructure as Code</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Monitoring & Automation</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <div class="mega-feature-card">
+                  <h5>New: IT Automation Suite</h5>
+                  <p>Automate monitoring, patching, and incident response with AI-driven workflows.</p>
+                  <a href="#" class="btn-feature">Explore Suite →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solutions -->
+      <div class="nav-item-custom" data-menu="solutions">
+        <button class="nav-link-custom" aria-haspopup="true" aria-expanded="false" aria-controls="mega-solutions">
+          Solutions
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega-menu" id="mega-solutions">
+          <div class="mega-bg-anim">
+            <div class="mega-bg-grid"></div>
+            <div class="mega-orb mega-orb-1"></div>
+            <div class="mega-orb mega-orb-2"></div>
+          </div>
+          
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-3 mega-col">
+                <h4>By Industry</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Financial Services</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Healthcare & Life Sciences</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/></svg> Manufacturing & Logistics</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Education & E-Learning</a></li>
+                </ul>
+              </div>
+              
+              <div class="col-lg-3 mega-col">
+                <h4>By Challenge</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Digital Transformation</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Legacy System Modernization</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Remote Workforce</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Zero-Trust Security</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <h4>Use Cases</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Customer Portals</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Data Analytics Pipelines</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Secure File Transfers</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <div class="mega-feature-card">
+                  <h5>Customer Success</h5>
+                  <p>See how we helped a global logistics firm cut IT downtime by 85% in six months.</p>
+                  <a href="#" class="btn-feature">Read Story →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learn -->
+      <div class="nav-item-custom" data-menu="learn">
+        <button class="nav-link-custom" aria-haspopup="true" aria-expanded="false" aria-controls="mega-learn">
+          Learn
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega-menu" id="mega-learn">
+          <div class="mega-bg-anim">
+            <div class="mega-bg-grid"></div>
+            <div class="mega-orb mega-orb-1"></div>
+            <div class="mega-orb mega-orb-2"></div>
+          </div>
+          
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-3 mega-col">
+                <h4>Training & Certification</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Self-Paced Courses</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Instructor-Led Classes</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg> IT Certifications</a></li>
+                </ul>
+              </div>
+              
+              <div class="col-lg-3 mega-col">
+                <h4>Resources</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Documentation</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Developer Tutorials</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Whitepapers</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg> Webinars & Videos</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <h4>Community</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Developer Forum</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Stack Overflow Collective</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> User Groups</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <div class="mega-feature-card">
+                  <h5>Free IT Readiness Assessment</h5>
+                  <p>Benchmark your infrastructure security and scalability in under 15 minutes.</p>
+                  <a href="#" class="btn-feature">Start Assessment →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support -->
+      <div class="nav-item-custom" data-menu="support">
+        <button class="nav-link-custom" aria-haspopup="true" aria-expanded="false" aria-controls="mega-support">
+          Support
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="mega-menu" id="mega-support">
+          <div class="mega-bg-anim">
+            <div class="mega-bg-grid"></div>
+            <div class="mega-orb mega-orb-1"></div>
+            <div class="mega-orb mega-orb-2"></div>
+          </div>
+          
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-3 mega-col">
+                <h4>Get Help</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 24/7 Support Portal</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Knowledge Base & FAQs</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Report an Incident</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> System Status</a></li>
+                </ul>
+              </div>
+              
+              <div class="col-lg-3 mega-col">
+                <h4>Community</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Developer Forum</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> User Groups</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Open Source Projects</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <h4>Direct Contact</h4>
+                <ul class="list-unstyled d-flex flex-column gap-1">
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email Support</a></li>
+                  <li><a href="#" class="mega-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call Sales</a></li>
+                </ul>
+              </div>
+
+              <div class="col-lg-3 mega-col">
+                <div class="mega-feature-card">
+                  <h5>Contact Support</h5>
+                  <p>Our fully managed IT team is available around the clock for critical issues.</p>
+                  <a href="#" class="btn-feature">Call Now →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <a href="#" class="btn btn-primary" data-nav="support">Get IT Support</a>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Open Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mega Menu Backdrop -->
+<div class="mega-backdrop" id="megaBackdrop"></div>
+
+<!-- ============================================================
+     MOBILE DRAWER (Bootstrap Accordion)
+     ============================================================ -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="accordion" id="mobileNavAccordion">
+    <!-- Products -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mobileProducts">
+          Products
+        </button>
+      </h2>
+      <div id="mobileProducts" class="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
+        <div class="accordion-body">
+          <a href="#" class="mobile-link">Enterprise Web Applications</a>
+          <a href="#" class="mobile-link">Mobile App Development</a>
+          <a href="#" class="mobile-link">Cloud Infrastructure</a>
+          <a href="#" class="mobile-link">24/7 Helpdesk Support</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solutions -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSolutions">
+          Solutions
+        </button>
+      </h2>
+      <div id="mobileSolutions" class="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
+        <div class="accordion-body">
+          <a href="#" class="mobile-link">Financial Services</a>
+          <a href="#" class="mobile-link">Healthcare</a>
+          <a href="#" class="mobile-link">Education & E-Learning</a>
+          <a href="#" class="mobile-link">Digital Transformation</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learn -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mobileLearn">
+          Learn
+        </button>
+      </h2>
+      <div id="mobileLearn" class="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
+        <div class="accordion-body">
+          <a href="#" class="mobile-link">Online Courses</a>
+          <a href="#" class="mobile-link">Professional Certifications</a>
+          <a href="#" class="mobile-link">Developer Tutorials</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSupport">
+          Support
+        </button>
+      </h2>
+      <div id="mobileSupport" class="accordion-collapse collapse" data-bs-parent="#mobileNavAccordion">
+        <div class="accordion-body">
+          <a href="#" class="mobile-link">Helpdesk Portal</a>
+          <a href="#" class="mobile-link">Knowledge Base</a>
+          <a href="#" class="mobile-link">Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="p-3">
+    <a href="#" class="btn btn-primary w-100 mt-3">Get IT Support</a>
+  </div>
+</div>
+
+<!-- ============================================================
+     SEARCH MODAL
+     ============================================================ -->
+<div class="modal fade search-modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered mt-5">
+    <div class="modal-content">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search services, solutions, articles…" autocomplete="off">
+        <button type="button" class="search-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="search-suggestions" id="searchSuggestions">
+        <div class="suggestion-group">
+          <h5>Popular Services</h5>
+          <div class="suggestion-item"><span>Custom Software Development</span><span class="suggestion-tag">Service</span></div>
+          <div class="suggestion-item"><span>Fully Managed IT Support</span><span class="suggestion-tag">Service</span></div>
+          <div class="suggestion-item"><span>Cloud Migration & Security</span><span class="suggestion-tag">Service</span></div>
+        </div>
+        <div class="suggestion-group">
+          <h5>Solutions</h5>
+          <div class="suggestion-item"><span>IT for Financial Services</span><span class="suggestion-tag">Industry</span></div>
+          <div class="suggestion-item"><span>Digital Transformation Roadmap</span><span class="suggestion-tag">Guide</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN VIEWS
+     ============================================================ -->
+<main id="app">
+
+  <!-- ========== HOME VIEW ========== -->
+  <section class="view" data-view="home">
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="container">
+        <div class="hero-content reveal">
+          <span class="eyebrow">Enterprise Technology Partner</span>
+          <h1>Software Development & Fully Managed IT Solutions</h1>
+          <p>From custom web platforms to 24/7 infrastructure management, we provide the complete technical backbone your business needs to scale securely and efficiently.</p>
+          <div class="d-flex flex-column flex-sm-row gap-3">
+            <a href="#" class="btn btn-primary" data-nav="products">Explore Services</a>
+            <a href="#" class="btn btn-light" data-nav="support">Schedule a Consultation</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-controls">
+        <div class="hero-dot active"></div>
+        <div class="hero-dot"></div>
+        <div class="hero-dot"></div>
+      </div>
+    </section>
+
+    <section class="py-5 reveal">
+      <div class="container py-4">
+        <span class="eyebrow">Latest Updates</span>
+        <h2 class="mb-4">Highlights from Hastabir Budha Magar</h2>
+        
+        <ul class="nav nav-tabs nav-tabs-custom" id="highlightsTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="events-tab" data-bs-toggle="tab" data-bs-target="#tab-events" type="button" role="tab" aria-controls="tab-events" aria-selected="true">Events</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="story-tab" data-bs-toggle="tab" data-bs-target="#tab-story" type="button" role="tab" aria-controls="tab-story" aria-selected="false">Customer Story</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="training-tab" data-bs-toggle="tab" data-bs-target="#tab-training" type="button" role="tab" aria-controls="tab-training" aria-selected="false">Training</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="community-tab" data-bs-toggle="tab" data-bs-target="#tab-community" type="button" role="tab" aria-controls="tab-community" aria-selected="false">Community</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="highlightsTabContent">
+          <div class="tab-pane fade show active" id="tab-events" role="tabpanel" aria-labelledby="events-tab">
+            <div class="highlight-grid">
+              <div class="highlight-text">
+                <h3>Future-Proof Your IT Infrastructure</h3>
+                <p>Join our upcoming live webinar where our senior architects break down zero-trust security frameworks, cloud cost optimization, and automated disaster recovery for modern enterprises.</p>
+                <a href="#" class="btn btn-primary">Register for the Webinar</a>
+              </div>
+              <div class="highlight-visual"><h4>Live Webinar<br><span style="color:var(--crimson)">Nov 14, 2026</span></h4></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-story" role="tabpanel" aria-labelledby="story-tab">
+            <div class="highlight-grid">
+              <div class="highlight-text">
+                <h3>Global Logistics Leader</h3>
+                <p>Discover how we standardized vehicle software development pipelines, automated CI/CD verification, and reduced release cycle times by 40% using our custom DevOps tooling.</p>
+                <a href="#" class="btn btn-dark">Read the Full Case Study</a>
+              </div>
+              <div class="highlight-visual"><h4>Global Logistics Leader<br><span style="color:var(--crimson)">Success Story</span></h4></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-training" role="tabpanel" aria-labelledby="training-tab">
+            <div class="highlight-grid">
+              <div class="highlight-text">
+                <h3>Advance Your Team's IT Skills</h3>
+                <p>Flexible virtual and in-person courses designed for modern development teams. From cloud architecture to cybersecurity compliance, upskill your workforce with certified instructors.</p>
+                <a href="#" class="btn btn-primary">Browse Course Catalog</a>
+              </div>
+              <div class="highlight-visual"><h4>Professional Training<br><span style="color:var(--crimson)">Certification Paths</span></h4></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="tab-community" role="tabpanel" aria-labelledby="community-tab">
+            <div class="highlight-grid">
+              <div class="highlight-text">
+                <h3>Join the Developer Network</h3>
+                <p>Connect with thousands of engineers, share code snippets, ask questions, and collaborate on open-source IT automation projects in our official community forum.</p>
+                <a href="#" class="btn btn-dark">Visit Community Hub</a>
+              </div>
+              <div class="highlight-visual"><h4>Developer Community<br><span style="color:var(--crimson)">Connect & Share</span></h4></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5 reveal border-top">
+      <div class="container py-4">
+        <div class="stories-head">
+          <div>
+            <span class="eyebrow">Proven Impact</span>
+            <h2>Customer Stories</h2>
+          </div>
+          <a href="#" class="btn btn-outline-secondary">View All Stories</a>
+        </div>
+        <div class="stories-track" id="storiesTrack">
+          <article class="story-card">
+            <div class="story-media">Automotive</div>
+            <div class="story-body">
+              <span class="story-tag">Manufacturing</span>
+              <h4>Global Logistics Fleet Modernization</h4>
+              <p>Migrated legacy dispatch systems to a cloud-native architecture, improving real-time tracking accuracy by 99.9%.</p>
+              <button class="story-link">Read Story →</button>
+            </div>
+          </article>
+          <article class="story-card">
+            <div class="story-media">Healthcare</div>
+            <div class="story-body">
+              <span class="story-tag">Healthcare</span>
+              <h4>HIPAA-Compliant Telehealth Platform</h4>
+              <p>Built a secure, high-availability video consultation platform serving over 2 million patients nationwide.</p>
+              <button class="story-link">Read Story →</button>
+            </div>
+          </article>
+          <article class="story-card">
+            <div class="story-media">Finance</div>
+            <div class="story-body">
+              <span class="story-tag">Financial Services</span>
+              <h4>Automated Fraud Detection Engine</h4>
+              <p>Implemented machine learning pipelines that reduced false positives by 60% while catching 15% more fraudulent transactions.</p>
+              <button class="story-link">Read Story →</button>
+            </div>
+          </article>
+          <article class="story-card">
+            <div class="story-media">Retail</div>
+            <div class="story-body">
+              <span class="story-tag">Retail</span>
+              <h4>Unified Commerce Infrastructure</h4>
+              <p>Connected 400+ retail locations with a centralized inventory and POS system, eliminating stockouts.</p>
+              <button class="story-link">Read Story →</button>
+            </div>
+          </article>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="prevStory" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="carousel-btn" id="nextStory" aria-label="Next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ========== PRODUCTS VIEW ========== -->
+  <section class="view" data-view="products" style="display:none">
+    <section class="py-5 bg-light" style="margin-top:var(--header)">
+      <div class="container py-4">
+        <span class="eyebrow">Products</span>
+        <h1>Technology Built for Scale</h1>
+        <p class="mb-5" style="max-width:640px">Explore our software and managed IT product lines.</p>
+        
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">💻</div>
+              <h3>Enterprise Web Apps</h3>
+              <p>Custom, high-performance web platforms built with modern frameworks and secure architectures.</p>
+              <a href="#" class="product-link">Learn More →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">📱</div>
+              <h3>Mobile App Development</h3>
+              <p>Native and cross-platform mobile experiences designed for engagement and reliability.</p>
+              <a href="#" class="product-link">Learn More →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">☁️</div>
+              <h3>Cloud Infrastructure</h3>
+              <p>Scalable, resilient cloud environments on AWS, Azure, and Google Cloud.</p>
+              <a href="#" class="product-link">Learn More →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🔒</div>
+              <h3>Cybersecurity Suite</h3>
+              <p>Zero-trust security, threat detection, and compliance automation.</p>
+              <a href="#" class="product-link">Learn More →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ========== SOLUTIONS VIEW ========== -->
+  <section class="view" data-view="solutions" style="display:none">
+    <section class="py-5" style="margin-top:var(--header)">
+      <div class="container py-4">
+        <span class="eyebrow">Solutions</span>
+        <h1>Solve Complex Challenges</h1>
+        <p class="mb-5" style="max-width:640px">Tailored technology solutions by industry and business challenge.</p>
+        
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🏦</div>
+              <h3>Financial Services</h3>
+              <p>Secure, compliant IT and software for banking, fintech, and insurance.</p>
+              <a href="#" class="product-link">Explore →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🏥</div>
+              <h3>Healthcare</h3>
+              <p>HIPAA-ready platforms, telehealth, and data interoperability solutions.</p>
+              <a href="#" class="product-link">Explore →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🏭</div>
+              <h3>Manufacturing</h3>
+              <p>IoT, fleet management, and supply-chain digitization.</p>
+              <a href="#" class="product-link">Explore →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🎓</div>
+              <h3>Education</h3>
+              <p>Learning management systems, virtual classrooms, and student portals.</p>
+              <a href="#" class="product-link">Explore →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ========== LEARN VIEW ========== -->
+  <section class="view" data-view="learn" style="display:none">
+    <section class="py-5 bg-light" style="margin-top:var(--header)">
+      <div class="container py-4">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <span class="eyebrow">Upskill Your Team</span>
+            <h2>Certified IT Training</h2>
+            <p>Flexible learning paths to keep your engineering and IT teams ahead of the curve.</p>
+            
+            <div class="accordion accordion-custom" id="learnAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#acc1" aria-expanded="true" aria-controls="acc1">
+                    Cloud Architecture Certification
+                  </button>
+                </h2>
+                <div id="acc1" class="accordion-collapse collapse show" data-bs-parent="#learnAccordion">
+                  <div class="accordion-body">
+                    Master multi-cloud design patterns, serverless computing, and infrastructure-as-code with hands-on labs.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#acc2" aria-expanded="false" aria-controls="acc2">
+                    Cybersecurity Operations
+                  </button>
+                </h2>
+                <div id="acc2" class="accordion-collapse collapse" data-bs-parent="#learnAccordion">
+                  <div class="accordion-body">
+                    Learn threat detection, incident response, and SOC workflows from certified security engineers.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#acc3" aria-expanded="false" aria-controls="acc3">
+                    DevOps & CI/CD Engineering
+                  </button>
+                </h2>
+                <div id="acc3" class="accordion-collapse collapse" data-bs-parent="#learnAccordion">
+                  <div class="accordion-body">
+                    Build automated pipelines, containerize applications, and implement GitOps workflows at scale.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="bg-white p-4 p-md-5 rounded shadow-sm">
+              <h3 class="mb-4">Featured Learning Paths</h3>
+              <div class="path-card">
+                <div class="path-num">1</div>
+                <div><h4>Enterprise Cloud Security</h4><p>Self-paced · 12 hours</p></div>
+              </div>
+              <div class="path-card">
+                <div class="path-num alt">2</div>
+                <div><h4>Software Verification & Validation</h4><p>Instructor-led · 24 hours</p></div>
+              </div>
+              <div class="path-card">
+                <div class="path-num">3</div>
+                <div><h4>IT Automation & Orchestration</h4><p>Self-paced · 18 hours</p></div>
+              </div>
+              <a href="#" class="btn btn-primary w-100 mt-3">Browse All Courses</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ========== SUPPORT VIEW ========== -->
+  <section class="view" data-view="support" style="display:none">
+    <section class="py-5 bg-light" style="margin-top:var(--header)">
+      <div class="container py-4">
+        <span class="eyebrow">Support</span>
+        <h1>We're Here to Help</h1>
+        <p class="mb-5" style="max-width:640px">Access our 24/7 helpdesk, knowledge base, and incident reporting tools.</p>
+        
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🎧</div>
+              <h3>24/7 Helpdesk</h3>
+              <p>Round-the-clock technical support for critical infrastructure and applications.</p>
+              <a href="#" class="product-link">Contact Support →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">📚</div>
+              <h3>Knowledge Base</h3>
+              <p>Search FAQs, troubleshooting guides, and best practices.</p>
+              <a href="#" class="product-link">Browse Articles →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">🚨</div>
+              <h3>Report an Incident</h3>
+              <p>Submit and track critical issues with our priority response team.</p>
+              <a href="#" class="product-link">Report Now →</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="product-card">
+              <div class="product-icon">💬</div>
+              <h3>Community Forum</h3>
+              <p>Connect with engineers and share solutions.</p>
+              <a href="#" class="product-link">Visit Forum →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="global-footer">
+  <div class="container">
+    
+    <!-- Footer Brand & Desktop Grid -->
+    <div class="row g-5 mb-5 d-none d-lg-flex">
+      <div class="col-lg-4 footer-brand">
+        <img src="/static/images/light-logo.png" alt="Hastabir Budha Magar">
+        <p>Fully managed IT and custom software development for forward-thinking enterprises.</p>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2 offset-lg-1 footer-col">
+        <h4>Products</h4>
+        <ul class="list-unstyled">
+          <li><a href="#">Software Development</a></li>
+          <li><a href="#">Managed IT Support</a></li>
+          <li><a href="#">Cloud Infrastructure</a></li>
+          <li><a href="#">Cybersecurity</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2 footer-col">
+        <h4>Resources</h4>
+        <ul class="list-unstyled">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">Customer Stories</a></li>
+          <li><a href="#">Events</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2 footer-col">
+        <h4>Company</h4>
+        <ul class="list-unstyled">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Legal & Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Mobile Footer Accordion -->
+    <div class="d-lg-none mb-4">
+      <div class="footer-brand mb-4 text-center">
+        <img src="/static/images/light-logo.png" alt="Hastabir Budha Magar" class="mx-auto">
+        <p class="mt-3">Fully managed IT and custom software development for forward-thinking enterprises.</p>
+      </div>
+      
+      <div class="accordion footer-accordion" id="footerAccordion">
+        <!-- Products -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#footerProducts">
+              Products
+            </button>
+          </h2>
+          <div id="footerProducts" class="accordion-collapse collapse" data-bs-parent="#footerAccordion">
+            <div class="accordion-body">
+              <a href="#">Software Development</a>
+              <a href="#">Managed IT Support</a>
+              <a href="#">Cloud Infrastructure</a>
+              <a href="#">Cybersecurity</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Resources -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#footerResources">
+              Resources
+            </button>
+          </h2>
+          <div id="footerResources" class="accordion-collapse collapse" data-bs-parent="#footerAccordion">
+            <div class="accordion-body">
+              <a href="#">Documentation</a>
+              <a href="#">Tutorials</a>
+              <a href="#">Customer Stories</a>
+              <a href="#">Events</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Company -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#footerCompany">
+              Company
+            </button>
+          </h2>
+          <div id="footerCompany" class="accordion-collapse collapse" data-bs-parent="#footerAccordion">
+            <div class="accordion-body">
+              <a href="#">About Us</a>
+              <a href="#">Careers</a>
+              <a href="#">Contact</a>
+              <a href="#">Legal & Privacy</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="mb-0">&copy; 2026 Hastabir Budha Magar. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookie Preferences</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ============================================================
+   APP LOGIC & MEGA MENU CONTROLLER
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ---------- Sticky Header ---------- */
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', scrollY > 8);
+    hideAllMenus(); // Close menus on scroll
+  });
+
+  /* ---------- Desktop Mega Menu Logic (Bulletproof Hover) ---------- */
+  const navItems = document.querySelectorAll('.nav-item-custom[data-menu]');
+  const backdrop = document.getElementById('megaBackdrop');
+  let closeTimeout;
+
+  function showMenu(item) {
+    clearTimeout(closeTimeout);
+    
+    // Close other menus instantly
+    navItems.forEach(nav => {
+      if (nav !== item) {
+        nav.classList.remove('mega-open');
+        nav.querySelector('.nav-link-custom').setAttribute('aria-expanded', 'false');
+      }
+    });
+    
+    // Open this menu
+    item.classList.add('mega-open');
+    item.querySelector('.nav-link-custom').setAttribute('aria-expanded', 'true');
+    backdrop.classList.add('active');
+  }
+
+  function hideAllMenus() {
+    navItems.forEach(nav => {
+      nav.classList.remove('mega-open');
+      nav.querySelector('.nav-link-custom').setAttribute('aria-expanded', 'false');
+    });
+    backdrop.classList.remove('active');
+  }
+
+  function startHideTimer() {
+    closeTimeout = setTimeout(() => {
+      hideAllMenus();
+    }, 150); // 150ms grace period
+  }
+
+  navItems.forEach(item => {
+    const trigger = item.querySelector('.nav-link-custom');
+    const menu = item.querySelector('.mega-menu');
+
+    // Hover on trigger opens menu
+    trigger.addEventListener('mouseenter', () => showMenu(item));
+    
+    // Leaving trigger starts the hide timer
+    trigger.addEventListener('mouseleave', startHideTimer);
+
+    // Entering the menu cancels the hide timer (Fixes the moving-down bug)
+    menu.addEventListener('mouseenter', () => clearTimeout(closeTimeout));
+    
+    // Leaving the menu starts the hide timer
+    menu.addEventListener('mouseleave', startHideTimer);
+
+    // Keyboard & Click accessibility
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (item.classList.contains('mega-open')) {
+        hideAllMenus();
+      } else {
+        showMenu(item);
+      }
+    });
+
+    trigger.addEventListener('focus', () => showMenu(item));
+  });
+
+  // Close when clicking the dark backdrop
+  backdrop.addEventListener('click', hideAllMenus);
+
+  // Close when pressing Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideAllMenus();
+  });
+
+  /* ---------- Mobile Drawer Toggle ---------- */
+  const mobileToggle = document.getElementById('mobileToggle');
+  const mobileDrawer = document.getElementById('mobileDrawer');
+  let menuOpen = false;
+
+  mobileToggle.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileDrawer.classList.toggle('active', menuOpen);
+    const spans = mobileToggle.querySelectorAll('span');
+    if(menuOpen){
+      spans[0].style.transform='rotate(45deg) translate(5px,5px)';
+      spans[1].style.opacity='0';
+      spans[2].style.transform='rotate(-45deg) translate(5px,-5px)';
+    } else {
+      spans[0].style.transform='none';
+      spans[1].style.opacity='1';
+      spans[2].style.transform='none';
+    }
+  });
+
+  // Close mobile drawer when a link inside is clicked
+  mobileDrawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileDrawer.classList.remove('active');
+      menuOpen = false;
+      mobileToggle.querySelectorAll('span').forEach(s => {
+        s.style.transform='none'; s.style.opacity='1';
+      });
+    });
+  });
+
+  /* ---------- SPA Router ---------- */
+  const views = document.querySelectorAll('.view');
+  const navLinks = document.querySelectorAll('[data-nav]');
+
+  function showView(name){
+    views.forEach(v => v.style.display = v.dataset.view === name ? 'block' : 'none');
+    window.scrollTo({top:0, behavior:'smooth'});
+    hideAllMenus();
+    mobileDrawer.classList.remove('active');
+    mobileToggle.querySelectorAll('span').forEach(s => {
+      s.style.transform='none'; s.style.opacity='1';
+    });
+    menuOpen = false;
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const nav = link.dataset.nav;
+      if(nav && document.querySelector(`.view[data-view="${nav}"]`)){
+        e.preventDefault();
+        showView(nav);
+      }
+    });
+  });
+
+  /* ---------- Search Input Focus ---------- */
+  const searchModal = document.getElementById('searchModal');
+  const searchInput = document.getElementById('searchInput');
+  const searchSuggestions = document.getElementById('searchSuggestions');
+
+  searchModal.addEventListener('shown.bs.modal', () => {
+    searchInput.focus();
+  });
+
+  searchInput.addEventListener('input', e => {
+    searchSuggestions.classList.toggle('active', e.target.value.trim().length > 0);
+  });
+
+  /* ---------- Hero dots ---------- */
+  document.querySelectorAll('.hero-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('.hero-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+
+  /* ---------- Story carousel ---------- */
+  const track = document.getElementById('storiesTrack');
+  if(track){
+    document.getElementById('prevStory').addEventListener('click', () => track.scrollBy({left:-360,behavior:'smooth'}));
+    document.getElementById('nextStory').addEventListener('click', () => track.scrollBy({left:360,behavior:'smooth'}));
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if(en.isIntersecting){ en.target.classList.add('visible'); observer.unobserve(en.target); }
+    });
+  }, {threshold:.12});
+  reveals.forEach(el => observer.observe(el));
+
+  /* ---------- Initial route ---------- */
+  showView('home');
+});
+</script>
+</body>
+</html>
